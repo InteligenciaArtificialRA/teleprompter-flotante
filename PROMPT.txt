@@ -1,0 +1,17 @@
+Hazme un teleprompter flotante para Mac. No sé programar y nunca he usado la Terminal, así que explícamelo todo paso a paso.
+
+Quiero:
+- Todo el código en UN solo archivo Swift (AppKit, sin Xcode), completo, sin trozos que falten.
+- Las instrucciones exactas: cómo abrir la Terminal, dónde guardar el archivo, el comando swiftc para compilarlo, cómo crear un guion de ejemplo (guion.txt) y el comando para abrirlo con ese guion. Si me falta algo (por ejemplo, las herramientas de línea de comandos de Xcode), dime cómo instalarlo.
+
+Cómo debe funcionar:
+1. Ventana sin bordes, fondo negro semitransparente (al 45 % más o menos) y texto blanco grande que sube solo.
+2. Siempre encima de todo, en todos los escritorios y también sobre apps a pantalla completa.
+3. Los clics la atraviesan: puedo usar el navegador que hay debajo como si no estuviera.
+4. Al pulsar la tecla ⌥ (Option) se «engancha»: sale un borde de color y entonces puedo desplazar el texto con el ratón, moverla arrastrando, cambiarle el tamaño desde una esquina y usar sus botones. Sigue enganchada mientras el ratón esté encima; al sacarlo, vuelve a dejar pasar los clics.
+5. Botones: play/pausa, más lento, más rápido, letra más grande, letra más pequeña, más y menos transparencia, volver arriba y cerrar.
+6. Doble toque rápido de ⌥ = play/pausa, esté en la app que esté. Que funcione sin pedir permisos especiales (puede mirar la tecla cada pocos milisegundos).
+7. Que recuerde el tamaño, la posición, la letra, la transparencia y la velocidad para la próxima vez.
+8. El guion es un .txt. Las líneas que empiezan por «# » son titulares y se leen (en negrita, sin el «#»). Las que empiezan por «> » son notas para mí que NO se leen: van en azul, más pequeñas y con una raya encima.
+
+Antes de dármelo, revisa que compila con la versión actual de Swift.

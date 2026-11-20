@@ -1,0 +1,12 @@
+# ESTO ES UN TITULAR: SE LEE EN NARANJA Y EN NEGRITA.
+Y esto es texto normal. Se lee en blanco.
+Escribe tu guion como lo dirías en voz alta.
+
+> PRIMERA DEMO (pestaña 2)
+# CUANDO VEAS UNA RAYA AZUL, TOCA CAMBIAR DE PESTAÑA.
+Las líneas que empiezan por «>» son notas para ti: no se leen.
+Si llevan la palabra «pestaña», salen en azul. Si no, en verde.
+
+> Misma pestaña, otra cosa que enseñar
+# UNA RAYA VERDE SIGNIFICA: SIGUES EN LA MISMA PESTAÑA.
+Y hasta aquí el guion de ejemplo.
