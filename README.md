@@ -6,7 +6,10 @@ Lo hizo una inteligencia artificial, sin saber programar, para leer los programa
 
 ## La forma más fácil: que te lo haga tu IA
 
-En [`PROMPT.txt`](PROMPT.txt) tienes el prompt. Lo copias, se lo pegas a Claude o a ChatGPT y te va diciendo los pasos. Si tienes un PC en vez de un Mac, díselo («no tengo Mac, tengo un PC») y te lo adapta.
+- **Mac:** [`PROMPT.txt`](PROMPT.txt)
+- **Windows 10/11:** [`PROMPT_WINDOWS.txt`](PROMPT_WINDOWS.txt) (probado en Windows: funciona)
+
+Lo copias, se lo pegas a Claude o a ChatGPT y te va diciendo los pasos. La IA no puede compilarlo desde el chat: si al compilar te sale un error, pégaselo y lo arregla.
 
 ## O usa este directamente (solo macOS)
 
@@ -46,7 +49,9 @@ Un archivo `.txt` normal:
 
 ## Avisos
 
-- Funciona **solo en macOS** y no necesita permisos especiales.
+- El programa de este repositorio es para **macOS**; para Windows, usa el prompt de Windows. Ninguno necesita permisos especiales.
+- En Windows se engancha con el **Alt de la izquierda** (el AltGr se usa para escribir @, # y €).
+- Mientras está abierto, **Ctrl+P** no sirve para imprimir en otros programas (Mac y Windows).
 - Se comparte **tal cual, sin soporte**. Si algo no te va, pídeselo a tu IA: es justo lo que hacemos en el canal.
 - Licencia [MIT](LICENSE).
 

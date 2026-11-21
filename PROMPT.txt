@@ -14,4 +14,4 @@ Cómo debe funcionar:
 7. Que recuerde el tamaño, la posición, la letra, la transparencia y la velocidad para la próxima vez.
 8. El guion es un .txt. Las líneas que empiezan por «# » son titulares y se leen (en negrita, sin el «#»). Las que empiezan por «> » son notas para mí que NO se leen: van en azul, más pequeñas y con una raya encima.
 
-Antes de dármelo, revisa que compila con la versión actual de Swift.
+Escríbelo para la versión actual de Swift. Ojo: tú no puedes compilarlo desde el chat, así que no me digas que lo has probado. Si al compilar me sale un error, te lo pego tal cual y lo arreglamos juntos.
