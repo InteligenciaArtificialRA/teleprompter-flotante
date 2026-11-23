@@ -21,6 +21,7 @@ Cómo debe funcionar:
    - Las líneas que empiezan por «# » son titulares: se leen, en NARANJA, en negrita y sin el «#».
    - El texto normal se lee, en blanco.
    - Las líneas que empiezan por «> » son notas para mí que NO se leen: más pequeñas y con una raya encima. Si la nota lleva la palabra «pestaña», raya y texto en AZUL («cambia de pestaña»); si no, en VERDE («sigues en la misma pestaña»).
-10. Que respete el notch y la barra de abajo del iPhone (viewport-fit=cover y env(safe-area-inset-...)).
+10. MODO CÁMARA (botón con una cámara): la cámara de delante (getUserMedia, facingMode "user", con audio) a pantalla completa de fondo, en espejo como un selfi, con una capa negra semitransparente encima y el texto sobre ella, con sombra para que se lea. En este modo el texto y la banda de lectura van arriba (a un 14 % de la altura), pegados a la cámara, para que parezca que miro a quien me ve. Botones extra: más y menos transparencia de la capa negra, y GRABAR: cuenta atrás 3-2-1 grande en pantalla, empieza a grabar con MediaRecorder (mp4 si el navegador lo admite, si no webm), arranca el texto y enseña un reloj rojo. Al parar, el vídeo se guarda en el aparato: en el móvil con el menú de compartir (navigator.share con el archivo, para «Guardar vídeo»); si no se puede, se descarga. Al salir del lector, apagar la cámara. El vídeo no se sube a ningún sitio.
+11. Que respete el notch y la barra de abajo del iPhone (viewport-fit=cover y env(safe-area-inset-...)).
 
 Antes de darme el código, revisa que el manifest tenga name, short_name, start_url, display "standalone", los iconos y theme_color, y que el service worker esté registrado, porque sin eso no se puede instalar. Si algo no te funciona, te pego el error y lo arreglamos.

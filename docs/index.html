@@ -86,6 +86,21 @@
   #barra button:active { background: #33333a; }
   #barra #play { background: var(--morado); min-width: 64px; font-size: 20px; }
   #barra .dato { align-self: center; font-size: 13px; color: var(--suave); min-width: 54px; text-align: center; font-variant-numeric: tabular-nums; }
+  /* Modo cámara: la cámara de fondo y el texto transparente encima */
+  #camara { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scaleX(-1); display: none; }
+  #velo { position: absolute; inset: 0; background: #000; opacity: .45; display: none; pointer-events: none; }
+  #lector.modo-camara #camara, #lector.modo-camara #velo { display: block; }
+  #lector.modo-camara #rollo { background: transparent; }
+  #lector.modo-camara #texto { padding-top: 14vh; text-shadow: 0 2px 6px rgba(0,0,0,.9); }
+  #lector.modo-camara #banda { top: 14vh; }
+  #barra .solo-camara { display: none; }
+  #lector.modo-camara #barra .solo-camara { display: inline-block; }
+  #barra #grabar.grabando { background: #e11d48; animation: latido 1s infinite; }
+  @keyframes latido { 50% { opacity: .6; } }
+  #reloj { position: absolute; top: calc(12px + var(--seguro-arriba)); right: 14px; z-index: 5; background: #e11d48; color: #fff;
+    border-radius: 999px; padding: 4px 10px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  #cuenta { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30vmin;
+    font-weight: 800; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,.8); z-index: 6; pointer-events: none; }
   #toast { position: absolute; top: calc(16px + var(--seguro-arriba)); left: 50%; transform: translateX(-50%);
     background: rgba(18,18,20,.92); border: 1px solid var(--borde); border-radius: 999px; padding: 6px 14px;
     font-size: 14px; color: var(--texto); opacity: 0; transition: opacity .25s; z-index: 5; pointer-events: none; }
@@ -136,6 +151,7 @@
     <ul>
       <li><strong>Toca el texto</strong> para arrancar o parar. Parado, puedes moverlo con el dedo.</li>
       <li>🐢 🐇 velocidad · A− A+ tamaño · ⇋ espejo (para cristal de teleprompter) · ⤒ volver arriba · ✎ volver al guion.</li>
+      <li><strong>📷 Modo cámara:</strong> la cámara de delante de fondo y el texto transparente encima, arriba del todo, para leer mirando a la cámara. <strong>⏺</strong> cuenta 3-2-1, graba y arranca el texto; otro toque para y guarda el vídeo en tu aparato. ◐ más o menos transparencia. El vídeo no se sube a ningún sitio.</li>
       <li>La pantalla no se apaga mientras lees.</li>
       <li>Con teclado o mando Bluetooth: <kbd>Espacio</kbd> play/pausa · <kbd>↑</kbd> <kbd>↓</kbd> velocidad · <kbd>RePág</kbd> <kbd>AvPág</kbd> retroceder y avanzar · <kbd>Esc</kbd> volver al guion.</li>
       <li>Recuerda tu guion, la velocidad, la letra y el espejo para la próxima vez.</li>
@@ -149,10 +165,14 @@
 </main>
 
 <section id="lector" class="oculto" aria-label="Teleprompter">
+  <video id="camara" autoplay muted playsinline></video>
+  <div id="velo"></div>
   <div id="progreso"></div>
   <div id="rollo"><div id="texto"></div></div>
   <div id="banda"></div>
   <div id="toast"></div>
+  <div id="reloj" class="oculto">● 0:00</div>
+  <div id="cuenta" class="oculto"></div>
   <nav id="barra">
     <button id="volver" title="Volver al guion (Esc)">✎</button>
     <button id="arriba" title="Volver arriba">⤒</button>
@@ -163,6 +183,10 @@
     <button id="menos" title="Letra más pequeña">A−</button>
     <button id="mas" title="Letra más grande">A+</button>
     <button id="espejo" title="Espejo">⇋</button>
+    <button id="cam" title="Modo cámara: grábate leyendo">📷</button>
+    <button id="grabar" class="solo-camara" title="Grabar">⏺</button>
+    <button id="masvelo" class="solo-camara" title="Fondo más oscuro">◐+</button>
+    <button id="menosvelo" class="solo-camara" title="Fondo más transparente">◐−</button>
   </nav>
 </section>
 
@@ -190,7 +214,7 @@
   const guardar = (k, v) => { try { localStorage.setItem('tp_' + k, JSON.stringify(v)); } catch (_) {} };
   const leerDato = (k, def) => { try { const v = localStorage.getItem('tp_' + k); return v === null ? def : JSON.parse(v); } catch (_) { return def; } };
 
-  const ajustes = Object.assign({ velocidad: 60, letra: 44, espejo: false }, leerDato('ajustes', {}));
+  const ajustes = Object.assign({ velocidad: 60, letra: 44, espejo: false, velo: 0.45 }, leerDato('ajustes', {}));
   const guardarAjustes = () => guardar('ajustes', ajustes);
 
   // ---------- Editor ----------
@@ -240,6 +264,7 @@
     texto.style.fontSize = ajustes.letra + 'px';
     texto.classList.toggle('espejo', ajustes.espejo);
     $('vel').textContent = ajustes.velocidad + ' px/s';
+    $('velo').style.opacity = ajustes.velo;
   }
 
   function abrirLector() {
@@ -254,6 +279,7 @@
 
   function cerrarLector(desdeAtras) {
     pausar();
+    apagarCamara();
     lector.classList.add('oculto');
     $('editor').classList.remove('oculto');
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
@@ -344,6 +370,84 @@
   $('espejo').onclick = () => { ajustes.espejo = !ajustes.espejo; guardarAjustes(); aplicarAjustes(); aviso(ajustes.espejo ? 'Espejo activado' : 'Espejo quitado'); mostrarBarra(); };
   $('arriba').onclick = () => { pos = rollo.scrollTop = 0; actualizarProgreso(); mostrarBarra(); };
   $('volver').onclick = () => cerrarLector(false);
+
+  // ---------- Modo cámara y grabación (todo se queda en el aparato) ----------
+  let flujo = null, grabadora = null, trozos = [], inicioGrab = 0, relojT = 0;
+  async function encenderCamara() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { aviso('Este navegador no deja usar la cámara'); return false; }
+    try {
+      flujo = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } },
+        audio: { echoCancellation: true, noiseSuppression: true }
+      });
+    } catch (err) { aviso('Sin permiso para la cámara'); flujo = null; return false; }
+    $('camara').srcObject = flujo;
+    lector.classList.add('modo-camara');
+    pos = rollo.scrollTop;
+    return true;
+  }
+  function apagarCamara() {
+    if (grabadora && grabadora.state !== 'inactive') pararGrabacion();
+    if (flujo) flujo.getTracks().forEach((t) => t.stop());
+    flujo = null; $('camara').srcObject = null;
+    lector.classList.remove('modo-camara');
+  }
+  function formatoVideo() {
+    const candidatos = ['video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+    return candidatos.find((t) => window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)) || '';
+  }
+  async function cuentaAtras() {
+    const c = $('cuenta'); c.classList.remove('oculto');
+    for (const n of [3, 2, 1]) { c.textContent = n; await new Promise((r) => setTimeout(r, 900)); }
+    c.classList.add('oculto');
+  }
+  async function empezarGrabacion() {
+    if (!flujo || !window.MediaRecorder) { aviso('Este navegador no puede grabar'); return; }
+    pausar();
+    await cuentaAtras();
+    const tipo = formatoVideo();
+    try { grabadora = new MediaRecorder(flujo, tipo ? { mimeType: tipo } : undefined); }
+    catch (_) { grabadora = new MediaRecorder(flujo); }
+    trozos = [];
+    grabadora.ondataavailable = (e) => { if (e.data && e.data.size) trozos.push(e.data); };
+    grabadora.onstop = guardarVideo;
+    grabadora.start(1000);
+    inicioGrab = Date.now();
+    $('grabar').classList.add('grabando'); $('grabar').textContent = '⏹';
+    $('reloj').classList.remove('oculto');
+    relojT = setInterval(() => {
+      const s = Math.floor((Date.now() - inicioGrab) / 1000);
+      $('reloj').textContent = '● ' + Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+    }, 500);
+    reproducir();
+  }
+  function pararGrabacion() {
+    if (grabadora && grabadora.state !== 'inactive') grabadora.stop();
+    clearInterval(relojT); $('reloj').classList.add('oculto');
+    $('grabar').classList.remove('grabando'); $('grabar').textContent = '⏺';
+    pausar();
+  }
+  async function guardarVideo() {
+    const tipo = (grabadora && grabadora.mimeType) || 'video/webm';
+    const ext = tipo.includes('mp4') ? 'mp4' : 'webm';
+    const blob = new Blob(trozos, { type: tipo });
+    const d = new Date(), dd = (n) => String(n).padStart(2, '0');
+    const nombre = `teleprompter_${d.getFullYear()}-${dd(d.getMonth() + 1)}-${dd(d.getDate())}_${dd(d.getHours())}${dd(d.getMinutes())}.${ext}`;
+    const archivo = new File([blob], nombre, { type: tipo });
+    // En el móvil, el menú de compartir deja «Guardar vídeo» en la galería; si no, se descarga.
+    if (navigator.canShare && navigator.canShare({ files: [archivo] })) {
+      try { await navigator.share({ files: [archivo], title: nombre }); return; } catch (_) {}
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+    aviso('Vídeo guardado');
+  }
+  $('cam').onclick = async () => { if (flujo) apagarCamara(); else await encenderCamara(); mostrarBarra(); };
+  $('grabar').onclick = () => (grabadora && grabadora.state === 'recording' ? pararGrabacion() : empezarGrabacion());
+  const cambiarVelo = (d) => { ajustes.velo = Math.round(Math.max(0, Math.min(0.9, ajustes.velo + d)) * 100) / 100; guardarAjustes(); aplicarAjustes(); aviso('Fondo ' + Math.round(ajustes.velo * 100) + ' %'); mostrarBarra(); };
+  $('masvelo').onclick = () => cambiarVelo(0.1);
+  $('menosvelo').onclick = () => cambiarVelo(-0.1);
 
   document.addEventListener('keydown', (e) => {
     if (lector.classList.contains('oculto')) return;

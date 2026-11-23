@@ -14,6 +14,8 @@ Es una **PWA** (aplicación web progresiva): una web que se instala como si fuer
 - **iPhone / iPad:** ábrelo en Safari → Compartir → «Añadir a pantalla de inicio».
 - **Ordenador:** en Chrome o Edge, el icono de instalar de la barra de direcciones.
 
+**📷 Modo cámara:** la cámara de delante de fondo y el texto **transparente** encima, arriba del todo, para leer mirando a la cámara. Cuenta 3-2-1, graba y el vídeo se guarda en tu aparato (no se sube a ningún sitio).
+
 No flota encima de otras ventanas (eso solo lo pueden hacer los de Mac y Windows): es para leer en el móvil, la tableta o con un teleprompter de cristal (tiene modo espejo). El código está en la carpeta [`docs/`](docs/).
 
 ## La forma más fácil: que te lo haga tu IA
