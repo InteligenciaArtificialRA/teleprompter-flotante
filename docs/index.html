@@ -166,7 +166,7 @@
 
   <footer>
     Hecho con IA para el canal <a href="https://www.youtube.com/@RodrigoArnedo_InteligenciaA" target="_blank" rel="noopener">Rodrigo Arnedo · Inteligencia Artificial</a> (IA News).<br>
-    Código abierto y gratis: <a href="https://github.com/InteligenciaArtificialRA/teleprompter-flotante" target="_blank" rel="noopener">GitHub</a>
+    Código abierto y gratis: <a href="https://github.com/InteligenciaArtificialRA/teleprompter-flotante" target="_blank" rel="noopener">GitHub</a> · <span id="version">v5</span>
   </footer>
 </main>
 
@@ -388,7 +388,7 @@
   function problemaCamara(titulo, texto, err) {
     $('pc-titulo').textContent = titulo;
     $('pc-texto').innerHTML = texto;
-    $('pc-tecnico').textContent = err ? (err.name || '') + (err.message ? ': ' + err.message : '') : '';
+    $('pc-tecnico').textContent = 'v5 · ' + (err ? (err.name || '') + (err.message ? ': ' + err.message : '') : '') + ' · ' + navigator.userAgent.replace(/^.*?\) /, '').slice(0, 80);
     $('panel-cam').classList.remove('oculto');
   }
   $('pc-cerrar').onclick = () => $('panel-cam').classList.add('oculto');
@@ -524,9 +524,22 @@
     e.preventDefault(); mostrarBarra();
   });
 
-  // ---------- Sin internet ----------
+  // ---------- Sin internet y siempre al día ----------
+  // Si hay una versión nueva, se instala sola y la página se recarga una vez (salvo si estás leyendo o grabando).
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    let recargado = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (recargado || !lector.classList.contains('oculto')) return;
+      recargado = true; location.reload();
+    });
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+        .then((reg) => {
+          reg.update().catch(() => {});
+          document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+        })
+        .catch(() => {});
+    });
   }
 })();
 </script>

@@ -1,6 +1,6 @@
 // Service worker: guarda la app en el aparato para que funcione sin internet.
 // Al cambiar cualquier archivo, sube la versión para que los móviles se actualicen.
-const VERSION = 'tp-v4';
+const VERSION = 'tp-v5';
 const ARCHIVOS = [
   './',
   './index.html',
@@ -13,7 +13,7 @@ const ARCHIVOS = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(ARCHIVOS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(ARCHIVOS.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
@@ -28,7 +28,8 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
   e.respondWith(
-    fetch(e.request)
+    // cache: 'no-cache' = preguntar siempre al servidor (GitHub Pages guarda 10 min en la caché del navegador)
+    fetch(e.request, { cache: 'no-cache' })
       .then((r) => {
         const copia = r.clone();
         caches.open(VERSION).then((c) => c.put(e.request, copia));
