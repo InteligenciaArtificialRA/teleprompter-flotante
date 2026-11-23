@@ -101,6 +101,12 @@
     border-radius: 999px; padding: 4px 10px; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
   #cuenta { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 30vmin;
     font-weight: 800; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,.8); z-index: 6; pointer-events: none; }
+  #panel-cam { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); max-width: 520px; margin: 0 auto; z-index: 7;
+    background: #18181b; border: 1px solid var(--morado); border-radius: 16px; padding: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.7); }
+  #panel-cam h2 { margin: 0 0 8px; font-size: 19px; }
+  #panel-cam p { margin: 0 0 12px; font-size: 15px; line-height: 1.5; color: var(--texto); }
+  #panel-cam #pc-tecnico { font-size: 12px; color: var(--suave); font-family: ui-monospace, Menlo, monospace; }
+  #panel-cam #pc-tecnico:empty { display: none; }
   #toast { position: absolute; top: calc(16px + var(--seguro-arriba)); left: 50%; transform: translateX(-50%);
     background: rgba(18,18,20,.92); border: 1px solid var(--borde); border-radius: 999px; padding: 6px 14px;
     font-size: 14px; color: var(--texto); opacity: 0; transition: opacity .25s; z-index: 5; pointer-events: none; }
@@ -173,6 +179,12 @@
   <div id="toast"></div>
   <div id="reloj" class="oculto">● 0:00</div>
   <div id="cuenta" class="oculto"></div>
+  <div id="panel-cam" class="oculto" role="alertdialog">
+    <h2 id="pc-titulo"></h2>
+    <p id="pc-texto"></p>
+    <p id="pc-tecnico"></p>
+    <div class="fila"><button class="boton principal" id="pc-reintentar">Reintentar</button><button class="boton" id="pc-cerrar">Cerrar</button></div>
+  </div>
   <nav id="barra">
     <button id="volver" title="Volver al guion (Esc)">✎</button>
     <button id="arriba" title="Volver arriba">⤒</button>
@@ -332,9 +344,9 @@
   }
 
   let avisoT = 0;
-  function aviso(msg) {
+  function aviso(msg, ms) {
     const t = $('toast'); t.textContent = msg; t.classList.add('visible');
-    clearTimeout(avisoT); avisoT = setTimeout(() => t.classList.remove('visible'), 1200);
+    clearTimeout(avisoT); avisoT = setTimeout(() => t.classList.remove('visible'), ms || 1200);
   }
 
   function cambiarVelocidad(d) {
@@ -373,17 +385,66 @@
 
   // ---------- Modo cámara y grabación (todo se queda en el aparato) ----------
   let flujo = null, grabadora = null, trozos = [], inicioGrab = 0, relojT = 0;
+  function problemaCamara(titulo, texto, err) {
+    $('pc-titulo').textContent = titulo;
+    $('pc-texto').innerHTML = texto;
+    $('pc-tecnico').textContent = err ? (err.name || '') + (err.message ? ': ' + err.message : '') : '';
+    $('panel-cam').classList.remove('oculto');
+  }
+  $('pc-cerrar').onclick = () => $('panel-cam').classList.add('oculto');
+  $('pc-reintentar').onclick = async () => { $('panel-cam').classList.add('oculto'); apagarCamara(); await encenderCamara(); };
+
   async function encenderCamara() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { aviso('Este navegador no deja usar la cámara'); return false; }
-    try {
-      flujo = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } },
-        audio: { echoCancellation: true, noiseSuppression: true }
-      });
-    } catch (err) { aviso('Sin permiso para la cámara'); flujo = null; return false; }
-    $('camara').srcObject = flujo;
+    if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      problemaCamara('Este navegador no deja usar la cámara', 'Ábrelo en <b>Chrome</b> (Android) o en <b>Safari</b> (iPhone) desde la dirección <b>https://</b>.');
+      return false;
+    }
+    aviso('Abriendo la cámara…', 4000);
+    // De más a menos exigente: si el micro está bloqueado, al menos la imagen.
+    const intentos = [
+      { video: { facingMode: 'user' }, audio: true },
+      { video: { facingMode: 'user' }, audio: false },
+      { video: true, audio: false }
+    ];
+    let ultimoError = null, sinAudio = false;
+    for (const c of intentos) {
+      try { flujo = await navigator.mediaDevices.getUserMedia(c); sinAudio = !c.audio; break; }
+      catch (err) {
+        ultimoError = err; flujo = null;
+        if (err.name === 'NotAllowedError' && c.audio === false) break;  // la cámara está bloqueada: no insistir
+      }
+    }
+    if (!flujo) {
+      const n = ultimoError && ultimoError.name;
+      if (n === 'NotAllowedError' || n === 'SecurityError') {
+        problemaCamara('La cámara está bloqueada',
+          'Hay que darle permiso una vez:<br>' +
+          '<b>Android (Chrome):</b> mantén pulsado el icono de la app → <b>Información de la app</b> → <b>Permisos</b> → <b>Cámara</b> y <b>Micrófono</b> → «Permitir». ' +
+          'Si la usas en el navegador: toca el icono a la izquierda de la dirección → <b>Permisos</b> → Cámara → Permitir.<br>' +
+          '<b>iPhone:</b> Ajustes → Safari → Cámara → «Permitir».<br>Luego toca <b>Reintentar</b>.', ultimoError);
+      } else if (n === 'NotReadableError' || n === 'AbortError') {
+        problemaCamara('Otra app está usando la cámara', 'Cierra la cámara, WhatsApp, Instagram o la videollamada que la tenga abierta y toca <b>Reintentar</b>.', ultimoError);
+      } else if (n === 'NotFoundError' || n === 'OverconstrainedError') {
+        problemaCamara('No encuentro la cámara', 'Este aparato no tiene cámara frontal disponible.', ultimoError);
+      } else {
+        problemaCamara('No se pudo abrir la cámara', 'Toca <b>Reintentar</b>. Si sigue igual, cierra la app del todo y ábrela otra vez.', ultimoError);
+      }
+      aviso('', 1);
+      return false;
+    }
+    const v = $('camara');
+    v.srcObject = flujo; v.muted = true; v.setAttribute('playsinline', '');
     lector.classList.add('modo-camara');
+    try { await v.play(); } catch (_) {}
+    aviso(sinAudio ? 'Cámara lista (sin micro: se grabará sin sonido)' : 'Cámara lista', sinAudio ? 3000 : 1200);
     pos = rollo.scrollTop;
+    setTimeout(() => {
+      if (flujo && !v.videoWidth) {
+        const t = flujo.getVideoTracks()[0];
+        problemaCamara('La cámara no da imagen', 'El permiso está bien, pero no llega imagen. Toca <b>Reintentar</b>; si sigue igual, cierra la app del todo y vuelve a abrirla.',
+          { name: 'SinImagen', message: t ? `pista ${t.readyState}, ${t.label}` : 'sin pista de vídeo' });
+      }
+    }, 3000);
     return true;
   }
   function apagarCamara() {
