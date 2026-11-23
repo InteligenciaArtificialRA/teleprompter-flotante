@@ -1,0 +1,26 @@
+Hazme un teleprompter que se pueda instalar en el móvil como una app, pero sin pasar por la App Store ni por Google Play: una PWA (aplicación web progresiva). No sé programar, así que explícamelo todo paso a paso.
+
+Quiero:
+- Solo archivos web (HTML, CSS y JavaScript), sin frameworks ni nada que instalar: un index.html con todo dentro, un manifest.webmanifest, un service worker (sw.js) y los iconos.
+- Que funcione SIN INTERNET una vez abierto la primera vez (el service worker guarda la app en el aparato).
+- Que el guion y los ajustes se guarden en el propio aparato (localStorage). Nada de servidores, cuentas ni registros: el guion no sale nunca del móvil.
+- Que me expliques cómo publicarlo GRATIS en GitHub Pages (crear la cuenta, crear el repositorio, subir los archivos desde la web de GitHub sin usar la consola y activar Pages), porque una PWA tiene que estar en una dirección https para poder instalarse.
+- Que me expliques cómo instalarla: en Android con Chrome («Instalar app»), en el ordenador con Chrome o Edge (el icono de instalar en la barra de direcciones) y en el iPhone o el iPad con Safari (Compartir → «Añadir a pantalla de inicio»).
+- Los iconos: dime cómo crearlos (192x192 y 512x512 en PNG, y uno «maskable» de 512 para Android), o dámelos hechos en SVG y dime cómo pasarlos a PNG.
+
+Cómo debe funcionar:
+1. Pantalla de guion: un cuadro grande para pegar o escribir el guion, un botón para abrir un .txt del móvil, uno de «Ejemplo», uno de «Borrar» y uno grande de «Empezar a leer». Si el navegador lo permite, un botón «Instalar como app». En iPhone, un aviso con los pasos para instalarla, porque allí no hay botón.
+2. Pantalla de lectura: fondo negro, letra grande en blanco que sube sola y una banda o flecha de color a un 40 % de la altura que marca por dónde debo ir leyendo.
+3. Tocar el texto = arrancar o parar. Parado, puedo moverlo con el dedo, y al darle a play sigue desde donde lo dejé.
+4. Barra de botones abajo que se esconde sola mientras leo y vuelve al tocar: volver al guion, volver arriba, más lento, play/pausa, más rápido, letra más pequeña, letra más grande y espejo (dar la vuelta al texto en horizontal, para los teleprompters de cristal).
+5. Que la pantalla no se apague mientras leo (Screen Wake Lock API, y que lo vuelva a pedir si salgo de la app y vuelvo).
+6. Con teclado o mando Bluetooth: Espacio = play/pausa, flecha arriba/abajo = velocidad, RePág/AvPág = retroceder o avanzar un tercio de pantalla, Esc = volver al guion.
+7. Que recuerde el guion, la velocidad, el tamaño de letra y el espejo para la próxima vez.
+8. Una rayita de progreso arriba del todo que muestre cuánto llevo del guion.
+9. El guion es texto normal con este formato:
+   - Las líneas que empiezan por «# » son titulares: se leen, en NARANJA, en negrita y sin el «#».
+   - El texto normal se lee, en blanco.
+   - Las líneas que empiezan por «> » son notas para mí que NO se leen: más pequeñas y con una raya encima. Si la nota lleva la palabra «pestaña», raya y texto en AZUL («cambia de pestaña»); si no, en VERDE («sigues en la misma pestaña»).
+10. Que respete el notch y la barra de abajo del iPhone (viewport-fit=cover y env(safe-area-inset-...)).
+
+Antes de darme el código, revisa que el manifest tenga name, short_name, start_url, display "standalone", los iconos y theme_color, y que el service worker esté registrado, porque sin eso no se puede instalar. Si algo no te funciona, te pego el error y lo arreglamos.

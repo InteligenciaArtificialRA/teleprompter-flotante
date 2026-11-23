@@ -1,13 +1,26 @@
-# Teleprompter flotante para Mac
+# Teleprompter flotante para Mac, Windows y el móvil
 
 Un teleprompter **transparente, siempre encima de todo y que deja pasar los clics**: lees tu guion mientras usas el navegador o lo que tengas debajo, como si no estuviera.
 
 Lo hizo una inteligencia artificial, sin saber programar, para leer los programas del canal **Rodrigo Arnedo Inteligencia Artificial** (IA News). Es gratis y es tuyo: úsalo, cámbialo y compártelo.
 
+## 📱 Para el móvil o la tableta: ábrelo e instálalo
+
+**https://inteligenciaartificialra.github.io/teleprompter-flotante/**
+
+Es una **PWA** (aplicación web progresiva): una web que se instala como si fuera una app, sin App Store ni Google Play. Funciona **sin internet** y tu guion **no sale de tu aparato**.
+
+- **Android:** ábrelo en Chrome y toca «Instalar como app».
+- **iPhone / iPad:** ábrelo en Safari → Compartir → «Añadir a pantalla de inicio».
+- **Ordenador:** en Chrome o Edge, el icono de instalar de la barra de direcciones.
+
+No flota encima de otras ventanas (eso solo lo pueden hacer los de Mac y Windows): es para leer en el móvil, la tableta o con un teleprompter de cristal (tiene modo espejo). El código está en la carpeta [`docs/`](docs/).
+
 ## La forma más fácil: que te lo haga tu IA
 
 - **Mac:** [`PROMPT.txt`](PROMPT.txt)
 - **Windows 10/11:** [`PROMPT_WINDOWS.txt`](PROMPT_WINDOWS.txt) (probado en Windows: funciona)
+- **Móvil (PWA):** [`PROMPT_PWA.txt`](PROMPT_PWA.txt)
 
 Lo copias, se lo pegas a Claude o a ChatGPT y te va diciendo los pasos. La IA no puede compilarlo desde el chat: si al compilar te sale un error, pégaselo y lo arregla.
 
@@ -49,10 +62,15 @@ Un archivo `.txt` normal:
 
 ## Avisos
 
-- El programa de este repositorio es para **macOS**; para Windows, usa el prompt de Windows. Ninguno necesita permisos especiales.
+- El programa `.swift` es para **macOS**; para Windows, usa el prompt de Windows; para el móvil, la PWA. Ninguno necesita permisos especiales.
 - En Windows se engancha con el **Alt de la izquierda** (el AltGr se usa para escribir @, # y €).
 - Mientras está abierto, **Ctrl+P** no sirve para imprimir en otros programas (Mac y Windows).
 - Se comparte **tal cual, sin soporte**. Si algo no te va, pídeselo a tu IA: es justo lo que hacemos en el canal.
 - Licencia [MIT](LICENSE).
+
+## Gracias
+
+- **Javi**, del equipo, por probarlo en Windows.
+- La idea de la versión PWA nos la dio **Santos**, un seguidor del canal, que nos enseñó el teleprompter PWA que había hecho para una clienta. Esta versión la hemos escrito desde cero.
 
 Canal: https://www.youtube.com/@RodrigoArnedo_InteligenciaA · Web: https://funontheride.com
