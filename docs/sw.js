@@ -1,6 +1,6 @@
 // Service worker: guarda la app en el aparato para que funcione sin internet.
 // Al cambiar cualquier archivo, sube la versión para que los móviles se actualicen.
-const VERSION = 'tp-v5';
+const VERSION = 'tp-v6';
 const ARCHIVOS = [
   './',
   './index.html',

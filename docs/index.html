@@ -111,6 +111,28 @@
     background: rgba(18,18,20,.92); border: 1px solid var(--borde); border-radius: 999px; padding: 6px 14px;
     font-size: 14px; color: var(--texto); opacity: 0; transition: opacity .25s; z-index: 5; pointer-events: none; }
   #toast.visible { opacity: 1; }
+  /* Salir: siempre a la vista, arriba a la izquierda (idea de Santos, La Mansión) */
+  #salir { position: absolute; top: calc(12px + var(--seguro-arriba)); left: 12px; z-index: 6; display: flex; align-items: center; gap: 6px;
+    height: 44px; padding: 0 16px 0 12px; border: 2px solid var(--morado); border-radius: 999px; background: rgba(18,18,20,.88);
+    font-size: 17px; font-weight: 700; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .3s; }
+  #salir .flecha { font-size: 22px; line-height: 1; }
+  #lector.leyendo #salir { opacity: .6; }
+  #salir:active { background: var(--morado); }
+  #lector.modo-camara #toast { top: calc(64px + var(--seguro-arriba)); }
+  /* Modo ticker: el texto corre de derecha a izquierda en una sola línea (idea de Santos) */
+  #lector.ticker #rollo { overflow-x: auto; overflow-y: hidden; display: flex; align-items: center; }
+  #lector.ticker #texto { margin: 0; padding: 0 70vw 0 60vw; max-width: none; white-space: nowrap; line-height: 1.2; }
+  #lector.ticker #texto.espejo { transform: none; }
+  #lector.ticker #rollo.espejo { transform: scaleX(-1); }
+  #lector.ticker #texto p { display: inline; margin: 0 .9em 0 0; }
+  #lector.ticker #texto .hueco { display: inline-block; width: 1.2em; height: auto; }
+  #lector.ticker #texto .nota { display: inline-block; vertical-align: middle; margin: 0 .9em 0 0; padding: 0 0 0 .35em; border-top: 0; border-left: 3px solid var(--verde); }
+  #lector.ticker #texto .nota.pestana { border-left-color: var(--azul); }
+  #lector.ticker #banda { display: none; }
+  #lector.ticker.modo-camara #rollo { align-items: flex-start; padding-top: 14vh; }
+  #lector.ticker.modo-camara #texto { padding-top: 0; }
+  .opcion { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 15px; color: var(--suave); }
+  .opcion .boton.activo { border-color: var(--morado); color: var(--texto); background: rgba(194,31,208,.18); }
 </style>
 </head>
 <body>
@@ -136,6 +158,11 @@
     <button class="boton oculto" id="instalar">⬇︎ Instalar como app</button>
     <input type="file" id="archivo" accept=".txt,text/plain" class="oculto">
   </div>
+  <div class="opcion" role="group" aria-label="Cómo corre el texto">
+    <span>El texto corre:</span>
+    <button class="boton" id="dir-vertical">⬆︎ De abajo arriba</button>
+    <button class="boton" id="dir-horizontal">⬅︎ De derecha a izquierda</button>
+  </div>
 
   <div id="aviso-ios" class="oculto">
     📱 <strong>Para instalarlo en el iPhone o el iPad:</strong> ábrelo en Safari, toca <strong>Compartir</strong> (el cuadrado con la flecha) y luego <strong>«Añadir a pantalla de inicio»</strong>.
@@ -156,17 +183,18 @@
     <summary>Cómo se usa al leer</summary>
     <ul>
       <li><strong>Toca el texto</strong> para arrancar o parar. Parado, puedes moverlo con el dedo.</li>
-      <li>🐢 🐇 velocidad · A− A+ tamaño · ⇋ espejo (para cristal de teleprompter) · ⤒ volver arriba · ✎ volver al guion.</li>
+      <li>🐢 🐇 velocidad · A− A+ tamaño · ⇋ espejo (para cristal de teleprompter) · ⤒ volver al principio · ⇅ / ⇠ cambiar cómo corre el texto · <strong>← Salir</strong> (arriba a la izquierda) vuelve al guion.</li>
+      <li><strong>De derecha a izquierda:</strong> el texto pasa en una sola línea, como los rótulos de las noticias. Se elige debajo del guion o con ⇅ mientras lees.</li>
       <li><strong>📷 Modo cámara:</strong> la cámara de delante de fondo y el texto transparente encima, arriba del todo, para leer mirando a la cámara. <strong>⏺</strong> cuenta 3-2-1, graba y arranca el texto; otro toque para y guarda el vídeo en tu aparato. ◐ más o menos transparencia. El vídeo no se sube a ningún sitio.</li>
       <li>La pantalla no se apaga mientras lees.</li>
       <li>Con teclado o mando Bluetooth: <kbd>Espacio</kbd> play/pausa · <kbd>↑</kbd> <kbd>↓</kbd> velocidad · <kbd>RePág</kbd> <kbd>AvPág</kbd> retroceder y avanzar · <kbd>Esc</kbd> volver al guion.</li>
-      <li>Recuerda tu guion, la velocidad, la letra y el espejo para la próxima vez.</li>
+      <li>Recuerda tu guion, la velocidad, la letra, el espejo y cómo corre el texto para la próxima vez.</li>
     </ul>
   </details>
 
   <footer>
     Hecho con IA para el canal <a href="https://www.youtube.com/@RodrigoArnedo_InteligenciaA" target="_blank" rel="noopener">Rodrigo Arnedo · Inteligencia Artificial</a> (IA News).<br>
-    Código abierto y gratis: <a href="https://github.com/InteligenciaArtificialRA/teleprompter-flotante" target="_blank" rel="noopener">GitHub</a> · <span id="version">v5</span>
+    Código abierto y gratis: <a href="https://github.com/InteligenciaArtificialRA/teleprompter-flotante" target="_blank" rel="noopener">GitHub</a> · <span id="version">v6</span> · Mejoras de «Salir» y «de derecha a izquierda» propuestas por Santos (La Mansión por el tejado)
   </footer>
 </main>
 
@@ -177,6 +205,7 @@
   <div id="rollo"><div id="texto"></div></div>
   <div id="banda"></div>
   <div id="toast"></div>
+  <button id="salir" title="Salir y volver al guion (Esc)"><span class="flecha">←</span> Salir</button>
   <div id="reloj" class="oculto">● 0:00</div>
   <div id="cuenta" class="oculto"></div>
   <div id="panel-cam" class="oculto" role="alertdialog">
@@ -186,7 +215,6 @@
     <div class="fila"><button class="boton principal" id="pc-reintentar">Reintentar</button><button class="boton" id="pc-cerrar">Cerrar</button></div>
   </div>
   <nav id="barra">
-    <button id="volver" title="Volver al guion (Esc)">✎</button>
     <button id="arriba" title="Volver arriba">⤒</button>
     <button id="lento" title="Más lento (↓)">🐢</button>
     <button id="play" title="Play / pausa (Espacio)">▶</button>
@@ -195,6 +223,7 @@
     <button id="menos" title="Letra más pequeña">A−</button>
     <button id="mas" title="Letra más grande">A+</button>
     <button id="espejo" title="Espejo">⇋</button>
+    <button id="direccion" title="Cambiar cómo corre el texto">⇅</button>
     <button id="cam" title="Modo cámara: grábate leyendo">📷</button>
     <button id="grabar" class="solo-camara" title="Grabar">⏺</button>
     <button id="masvelo" class="solo-camara" title="Fondo más oscuro">◐+</button>
@@ -226,8 +255,26 @@
   const guardar = (k, v) => { try { localStorage.setItem('tp_' + k, JSON.stringify(v)); } catch (_) {} };
   const leerDato = (k, def) => { try { const v = localStorage.getItem('tp_' + k); return v === null ? def : JSON.parse(v); } catch (_) { return def; } };
 
-  const ajustes = Object.assign({ velocidad: 60, letra: 44, espejo: false, velo: 0.45 }, leerDato('ajustes', {}));
+  const ajustes = Object.assign({ velocidad: 60, letra: 44, espejo: false, velo: 0.45, direccion: 'vertical' }, leerDato('ajustes', {}));
   const guardarAjustes = () => guardar('ajustes', ajustes);
+
+  // ---------- Dirección: vertical (normal) u horizontal (ticker, de derecha a izquierda) ----------
+  const FACTOR_TICKER = 4; // en una sola línea hace falta correr más píxeles por segundo para leer al mismo ritmo
+  const horiz = () => ajustes.direccion === 'horizontal';
+  const rolloEl = () => document.getElementById('rollo');
+  const getS = () => (horiz() ? rolloEl().scrollLeft : rolloEl().scrollTop);
+  const setS = (v) => { if (horiz()) rolloEl().scrollLeft = v; else rolloEl().scrollTop = v; };
+  const tamS = () => (horiz() ? rolloEl().scrollWidth : rolloEl().scrollHeight);
+  const vistaS = () => (horiz() ? rolloEl().clientWidth : rolloEl().clientHeight);
+  const maxS = () => tamS() - vistaS();
+  function pintarDireccion() {
+    $('dir-vertical').classList.toggle('activo', !horiz());
+    $('dir-horizontal').classList.toggle('activo', horiz());
+  }
+  function ponerDireccion(d) { ajustes.direccion = d; guardarAjustes(); pintarDireccion(); }
+  $('dir-vertical').onclick = () => ponerDireccion('vertical');
+  $('dir-horizontal').onclick = () => ponerDireccion('horizontal');
+  pintarDireccion();
 
   // ---------- Editor ----------
   const guion = $('guion');
@@ -274,8 +321,11 @@
 
   function aplicarAjustes() {
     texto.style.fontSize = ajustes.letra + 'px';
-    texto.classList.toggle('espejo', ajustes.espejo);
-    $('vel').textContent = ajustes.velocidad + ' px/s';
+    lector.classList.toggle('ticker', horiz());
+    texto.classList.toggle('espejo', ajustes.espejo && !horiz());
+    rollo.classList.toggle('espejo', ajustes.espejo && horiz());
+    $('vel').textContent = (horiz() ? ajustes.velocidad * FACTOR_TICKER : ajustes.velocidad) + ' px/s';
+    $('direccion').textContent = horiz() ? '⇠' : '⇅';
     $('velo').style.opacity = ajustes.velo;
   }
 
@@ -284,7 +334,7 @@
     aplicarAjustes();
     $('editor').classList.add('oculto');
     lector.classList.remove('oculto');
-    pos = 0; rollo.scrollTop = 0; actualizarProgreso();
+    pos = 0; rollo.scrollTop = 0; rollo.scrollLeft = 0; actualizarProgreso();
     mostrarBarra();
     history.pushState({ lector: true }, '');
   }
@@ -305,15 +355,16 @@
   document.addEventListener('visibilitychange', () => { if (reproduciendo && document.visibilityState === 'visible') pedirPantallaEncendida(); });
 
   function reproducir() {
-    if (rollo.scrollTop >= rollo.scrollHeight - rollo.clientHeight - 1) { pos = 0; rollo.scrollTop = 0; }
-    reproduciendo = true; pos = rollo.scrollTop; ultimo = performance.now();
+    if (getS() >= maxS() - 1) { pos = 0; setS(0); }
+    reproduciendo = true; pos = getS(); ultimo = performance.now();
+    lector.classList.add('leyendo');
     $('play').textContent = '⏸';
     pedirPantallaEncendida();
     requestAnimationFrame(paso);
     mostrarBarra();
   }
   function pausar() {
-    reproduciendo = false; $('play').textContent = '▶';
+    reproduciendo = false; $('play').textContent = '▶'; lector.classList.remove('leyendo');
     if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
     mostrarBarra(true);
   }
@@ -323,19 +374,19 @@
     if (!reproduciendo) return;
     const dt = Math.min(0.1, (ahora - ultimo) / 1000); ultimo = ahora;
     // Si el usuario ha movido el texto con el dedo, seguimos desde ahí.
-    if (Math.abs(rollo.scrollTop - Math.round(pos)) > 3) pos = rollo.scrollTop;
-    pos += ajustes.velocidad * dt;
-    rollo.scrollTop = pos;
+    if (Math.abs(getS() - Math.round(pos)) > 3) pos = getS();
+    pos += ajustes.velocidad * (horiz() ? FACTOR_TICKER : 1) * dt;
+    setS(pos);
     actualizarProgreso();
-    if (rollo.scrollTop >= rollo.scrollHeight - rollo.clientHeight - 1) { pausar(); aviso('Fin del guion'); return; }
+    if (getS() >= maxS() - 1) { pausar(); aviso('Fin del guion'); return; }
     requestAnimationFrame(paso);
   }
 
   function actualizarProgreso() {
-    const max = rollo.scrollHeight - rollo.clientHeight;
-    $('progreso').style.width = (max > 0 ? (rollo.scrollTop / max) * 100 : 0) + '%';
+    const max = maxS();
+    $('progreso').style.width = (max > 0 ? (getS() / max) * 100 : 0) + '%';
   }
-  rollo.addEventListener('scroll', () => { if (!reproduciendo) { pos = rollo.scrollTop; actualizarProgreso(); } }, { passive: true });
+  rollo.addEventListener('scroll', () => { if (!reproduciendo) { pos = getS(); actualizarProgreso(); } }, { passive: true });
 
   function mostrarBarra(fija) {
     barra.classList.remove('apagada');
@@ -355,13 +406,13 @@
   }
   function cambiarLetra(d) {
     // Mantener la misma línea en la banda al cambiar el tamaño
-    const proporcion = rollo.scrollTop / Math.max(1, rollo.scrollHeight);
+    const proporcion = getS() / Math.max(1, tamS());
     ajustes.letra = Math.max(18, Math.min(140, ajustes.letra + d));
     guardarAjustes(); aplicarAjustes();
-    rollo.scrollTop = pos = proporcion * rollo.scrollHeight;
+    setS(pos = proporcion * tamS());
     aviso('Letra ' + ajustes.letra);
   }
-  function saltar(fraccion) { pos = rollo.scrollTop = Math.max(0, rollo.scrollTop + rollo.clientHeight * fraccion); actualizarProgreso(); }
+  function saltar(fraccion) { pos = Math.max(0, getS() + vistaS() * fraccion); setS(pos); actualizarProgreso(); }
 
   // Tocar el texto (sin arrastrar) = play / pausa
   let toque = null;
@@ -380,8 +431,15 @@
   $('menos').onclick = () => { cambiarLetra(-4); mostrarBarra(); };
   $('mas').onclick = () => { cambiarLetra(4); mostrarBarra(); };
   $('espejo').onclick = () => { ajustes.espejo = !ajustes.espejo; guardarAjustes(); aplicarAjustes(); aviso(ajustes.espejo ? 'Espejo activado' : 'Espejo quitado'); mostrarBarra(); };
-  $('arriba').onclick = () => { pos = rollo.scrollTop = 0; actualizarProgreso(); mostrarBarra(); };
-  $('volver').onclick = () => cerrarLector(false);
+  $('arriba').onclick = () => { pos = 0; setS(0); actualizarProgreso(); mostrarBarra(); };
+  $('direccion').onclick = () => {
+    const proporcion = getS() / Math.max(1, maxS());
+    ponerDireccion(horiz() ? 'vertical' : 'horizontal'); aplicarAjustes();
+    rollo.scrollTop = 0; rollo.scrollLeft = 0;
+    requestAnimationFrame(() => { setS(pos = proporcion * maxS()); actualizarProgreso(); });
+    aviso(horiz() ? 'De derecha a izquierda' : 'De abajo arriba'); mostrarBarra();
+  };
+  $('salir').onclick = () => cerrarLector(false);
 
   // ---------- Modo cámara y grabación (todo se queda en el aparato) ----------
   let flujo = null, grabadora = null, trozos = [], inicioGrab = 0, relojT = 0;
@@ -437,7 +495,7 @@
     lector.classList.add('modo-camara');
     try { await v.play(); } catch (_) {}
     aviso(sinAudio ? 'Cámara lista (sin micro: se grabará sin sonido)' : 'Cámara lista', sinAudio ? 3000 : 1200);
-    pos = rollo.scrollTop;
+    pos = getS();
     setTimeout(() => {
       if (flujo && !v.videoWidth) {
         const t = flujo.getVideoTracks()[0];
@@ -518,7 +576,7 @@
     else if (k === 'ArrowDown') cambiarVelocidad(-10);
     else if (k === 'PageDown' || k === 'ArrowRight') saltar(0.33);
     else if (k === 'PageUp' || k === 'ArrowLeft') saltar(-0.33);
-    else if (k === 'Home') { pos = rollo.scrollTop = 0; actualizarProgreso(); }
+    else if (k === 'Home') { pos = 0; setS(0); actualizarProgreso(); }
     else if (k === 'Escape') cerrarLector(false);
     else return;
     e.preventDefault(); mostrarBarra();
